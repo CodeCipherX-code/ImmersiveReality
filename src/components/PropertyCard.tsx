@@ -115,7 +115,7 @@ const PropertyCard = ({
                     onClick={() => {
                       onViewTour();
                       // Redirect to VR tour page with this property
-                      window.location.href = `/property-tour?id=${title.toLowerCase().replace(/\s+/g, "-")}`;
+                      window.location.href = `/property-tour?id=${title.toLowerCase().replace(/\s+/g, "-")}${imageUrl.includes("tour360") ? `&tourUrl=${encodeURIComponent(imageUrl)}` : ""}`;
                     }}
                   >
                     <Eye className="mr-2 h-4 w-4" />

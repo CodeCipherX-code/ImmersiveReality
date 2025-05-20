@@ -51,6 +51,7 @@ interface PropertyDetailsProps {
   status?: string;
   financingOptions?: Array<{ name: string; rate: string; term: string }>;
   images?: string[];
+  tour360?: string | null;
 }
 
 const defaultAmenities = [
@@ -104,6 +105,7 @@ const PropertyDetails = ({
     "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80",
     "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80",
   ],
+  tour360 = null,
 }: PropertyDetailsProps) => {
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [showMessageModal, setShowMessageModal] = useState(false);
@@ -409,11 +411,24 @@ const PropertyDetails = ({
                     variant="outline"
                     className="w-full mt-2"
                     onClick={() =>
-                      (window.location.href = `/property-tour?id=${id}`)
+                      (window.location.href = `/property-tour/${id}`)
                     }
                   >
                     <Eye className="h-4 w-4 mr-2" />
                     View 360° Tour
+                  </Button>
+                  <Button
+                    variant="primary"
+                    className="w-full mt-2 bg-green-600 hover:bg-green-700"
+                    onClick={() =>
+                      window.open(
+                        "https://poly.cam/capture/D1321BAF-FAF6-435F-8784-87C6DA7BC1C9",
+                        "_blank",
+                      )
+                    }
+                  >
+                    <Eye className="h-4 w-4 mr-2" />
+                    Full Property Tour
                   </Button>
                   <SavePropertyButton
                     propertyId={id}

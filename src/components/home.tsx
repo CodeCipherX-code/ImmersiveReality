@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNotification } from "@/components/NotificationProvider";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -10,6 +10,12 @@ import {
   Home as HomeIcon,
   Cog,
   BarChart4,
+  Building,
+  MapPin,
+  Briefcase,
+  Heart,
+  ChevronRight,
+  ArrowRight,
 } from "lucide-react";
 import { useStats } from "@/hooks/useStats";
 import Navbar from "./Navbar";
@@ -19,6 +25,9 @@ import FeatureCard from "./FeatureCard";
 import StatsCard from "./StatsCard";
 import { Button } from "./ui/button";
 import { useInView } from "framer-motion";
+import HeroSection from "./HeroSection";
+import BlogSection from "./BlogSection";
+import MemeSection from "./MemeSection";
 
 interface HomeProps {
   initialProperties?: Array<{
@@ -73,6 +82,7 @@ const Home = ({ initialProperties = defaultProperties }: HomeProps) => {
   const stats = useStats();
   const { showNotification, showRandomNotification } = useNotification();
   const ref = React.useRef<HTMLDivElement>(null);
+  const [activeTab, setActiveTab] = useState("buy");
 
   useEffect(() => {
     // Show welcome notification with a delay to ensure app is loaded
@@ -104,7 +114,7 @@ const Home = ({ initialProperties = defaultProperties }: HomeProps) => {
   }, [showNotification, showRandomNotification]);
 
   return (
-    <AnimatedGradientBackground className="min-h-screen">
+    <div className="min-h-screen bg-white">
       <Navbar />
 
       <motion.main
@@ -113,111 +123,112 @@ const Home = ({ initialProperties = defaultProperties }: HomeProps) => {
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
         {/* Hero Section */}
-        <section className="pt-20 pb-16">
-          <div className="container mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
-            >
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
-                The <span className="text-green-600">ultimate</span> <br />
-                real estate <br />
-                platform
-              </h1>
-              <p className="text-lg text-gray-600 mb-8">
-                Creating exceptional real estate solutions designed to elevate
-                your business.
-              </p>
+        <HeroSection />
+
+        {/* Featured Properties */}
+        <section className="py-16 bg-gray-50">
+          <div className="container mx-auto px-4">
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-2xl md:text-3xl font-bold">
+                Featured Properties
+              </h2>
               <Button
-                size="lg"
-                className="bg-green-600 hover:bg-green-700 text-white px-8"
+                variant="outline"
+                className="border-green-600 text-green-600 hover:bg-green-50 flex items-center"
                 onClick={() => (window.location.href = "/properties")}
               >
-                Get Started
+                View All <ChevronRight className="ml-1 h-4 w-4" />
               </Button>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
-              className="relative"
-            >
-              <img
-                src="https://images.unsplash.com/photo-1582376432754-b63cc6a9b8c3?w=800&q=80"
-                alt="Real Estate Platform"
-                className="rounded-lg shadow-xl w-full"
-              />
-
-              <motion.div
-                className="absolute -bottom-5 -left-5 bg-white p-4 rounded-lg shadow-lg"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.8, type: "spring" }}
-              >
-                <div className="flex items-center gap-2">
-                  <div className="bg-green-100 p-2 rounded-full">
-                    <TrendingUp className="h-5 w-5 text-green-600" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {initialProperties.map((property, index) => (
+                <motion.div
+                  key={property.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 * index }}
+                  className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow"
+                  onClick={() =>
+                    (window.location.href = `/property/${property.id}`)
+                  }
+                  onViewTour={() => {
+                    if (property.tour360) {
+                      window.location.href = `/property-tour?id=${property.id}&tourUrl=${encodeURIComponent(property.tour360)}`;
+                    }
+                  }}
+                >
+                  <div className="relative">
+                    <img
+                      src={property.imageUrl}
+                      alt={property.title}
+                      className="w-full h-48 object-cover"
+                    />
+                    <div className="absolute top-2 right-2 bg-green-600 text-white px-2 py-1 rounded text-sm font-medium">
+                      For Sale
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-xs text-gray-500">Properties</p>
-                    <p className="font-bold">
-                      {stats.totalProperties.toLocaleString()}
+                  <div className="p-4">
+                    <h3 className="text-lg font-semibold mb-1 truncate">
+                      {property.title}
+                    </h3>
+                    <p className="text-gray-500 text-sm mb-2">
+                      {property.location}
                     </p>
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div
-                className="absolute -top-5 -right-5 bg-white p-4 rounded-lg shadow-lg"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 1, type: "spring" }}
-              >
-                <div className="flex items-center gap-2">
-                  <div className="bg-green-100 p-2 rounded-full">
-                    <Users className="h-5 w-5 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500">Active Users</p>
-                    <p className="font-bold">
-                      {stats.activeUsers.toLocaleString()}
+                    <p className="text-green-600 font-bold text-xl mb-3">
+                      ₹{(property.price / 100000).toFixed(1)}L
                     </p>
+                    <div className="flex justify-between text-sm text-gray-500">
+                      <span>{property.bedrooms} Beds</span>
+                      <span>{property.bathrooms} Baths</span>
+                      <span>{property.sqft} sq.ft</span>
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            </motion.div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Property Types Section */}
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4">
+            <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">
+              Explore Property Types
+            </h2>
+
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+              {[
+                { icon: HomeIcon, label: "Apartments", count: 1245 },
+                { icon: Building, label: "Villas", count: 873 },
+                { icon: Building2, label: "Bungalows", count: 562 },
+                { icon: MapPin, label: "Plots", count: 1089 },
+                { icon: Briefcase, label: "Commercial", count: 734 },
+              ].map((item, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.1 * index }}
+                  className="bg-white border border-gray-200 rounded-lg p-4 text-center hover:shadow-md transition-shadow cursor-pointer"
+                  onClick={() => (window.location.href = "/properties")}
+                >
+                  <div className="bg-green-100 p-3 rounded-full mx-auto w-16 h-16 flex items-center justify-center mb-3">
+                    <item.icon className="h-8 w-8 text-green-600" />
+                  </div>
+                  <h3 className="font-semibold mb-1">{item.label}</h3>
+                  <p className="text-sm text-gray-500">
+                    {item.count} Properties
+                  </p>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </section>
 
         {/* Strategy Section */}
-        <section className="py-20 bg-gray-50 relative overflow-hidden">
-          {/* Animated background elements */}
-          <div className="absolute inset-0 z-0">
-            {[...Array(10)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute rounded-full bg-green-500/10"
-                style={{
-                  width: `${Math.random() * 200 + 50}px`,
-                  height: `${Math.random() * 200 + 50}px`,
-                  top: `${Math.random() * 100}%`,
-                  left: `${Math.random() * 100}%`,
-                }}
-                animate={{
-                  x: [0, Math.random() * 50 - 25],
-                  y: [0, Math.random() * 50 - 25],
-                }}
-                transition={{
-                  duration: 5 + Math.random() * 5,
-                  repeat: Infinity,
-                  repeatType: "reverse",
-                  ease: "easeInOut",
-                }}
-              />
-            ))}
-          </div>
+        <section className="py-16 bg-gray-50 relative overflow-hidden">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <motion.div
@@ -276,30 +287,96 @@ const Home = ({ initialProperties = defaultProperties }: HomeProps) => {
           </div>
         </section>
 
-        {/* Success Metrics Section */}
-        <section className="py-20 relative">
-          {/* Animated dots background */}
-          <div className="absolute inset-0 z-0 overflow-hidden">
-            {[...Array(50)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute w-1 h-1 md:w-2 md:h-2 rounded-full bg-green-500/20"
-                style={{
-                  top: `${Math.random() * 100}%`,
-                  left: `${Math.random() * 100}%`,
-                }}
-                animate={{
-                  scale: [1, 1.5, 1],
-                  opacity: [0.3, 0.7, 0.3],
-                }}
-                transition={{
-                  duration: 3 + Math.random() * 5,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              />
-            ))}
+        {/* Popular Cities */}
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4">
+            <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">
+              Popular Cities
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {[
+                {
+                  name: "Ahmedabad",
+                  image:
+                    "https://images.unsplash.com/photo-1599940824399-b87987ceb969?w=800&q=80",
+                  properties: 1245,
+                },
+                {
+                  name: "Surat",
+                  image:
+                    "https://images.unsplash.com/photo-1572508588813-77abd219e994?w=800&q=80",
+                  properties: 873,
+                },
+                {
+                  name: "Vadodara",
+                  image:
+                    "https://images.unsplash.com/photo-1580558606307-50d51681045c?w=800&q=80",
+                  properties: 562,
+                },
+                {
+                  name: "Rajkot",
+                  image:
+                    "https://images.unsplash.com/photo-1582376432754-b63cc6a9b8c3?w=800&q=80",
+                  properties: 734,
+                },
+                {
+                  name: "Gandhinagar",
+                  image:
+                    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80",
+                  properties: 421,
+                },
+                {
+                  name: "Bhavnagar",
+                  image:
+                    "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80",
+                  properties: 318,
+                },
+                {
+                  name: "Jamnagar",
+                  image:
+                    "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80",
+                  properties: 256,
+                },
+                {
+                  name: "Junagadh",
+                  image:
+                    "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800&q=80",
+                  properties: 189,
+                },
+              ].map((city, index) => (
+                <motion.div
+                  key={city.name}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.1 * (index % 4) }}
+                  className="relative group cursor-pointer overflow-hidden rounded-lg shadow-md"
+                  onClick={() =>
+                    (window.location.href = `/properties?city=${city.name.toLowerCase()}`)
+                  }
+                >
+                  <div className="aspect-[4/3] overflow-hidden">
+                    <img
+                      src={city.image}
+                      alt={city.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
+                      <h3 className="text-xl font-semibold mb-1">
+                        {city.name}
+                      </h3>
+                      <p className="text-sm">{city.properties} Properties</p>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           </div>
+        </section>
+
+        {/* Success Metrics Section */}
+        <section className="py-16 bg-gray-50">
           <div className="container mx-auto px-4 text-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -318,7 +395,7 @@ const Home = ({ initialProperties = defaultProperties }: HomeProps) => {
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-              <div className="text-center">
+              <div className="text-center bg-white p-6 rounded-lg shadow-md">
                 <motion.div
                   initial={{ opacity: 0, scale: 0.5 }}
                   whileInView={{ opacity: 1, scale: 1 }}
@@ -335,7 +412,7 @@ const Home = ({ initialProperties = defaultProperties }: HomeProps) => {
                 />
               </div>
 
-              <div className="text-center">
+              <div className="text-center bg-white p-6 rounded-lg shadow-md">
                 <motion.div
                   initial={{ opacity: 0, scale: 0.5 }}
                   whileInView={{ opacity: 1, scale: 1 }}
@@ -353,7 +430,7 @@ const Home = ({ initialProperties = defaultProperties }: HomeProps) => {
                 />
               </div>
 
-              <div className="text-center">
+              <div className="text-center bg-white p-6 rounded-lg shadow-md">
                 <motion.div
                   initial={{ opacity: 0, scale: 0.5 }}
                   whileInView={{ opacity: 1, scale: 1 }}
@@ -373,7 +450,7 @@ const Home = ({ initialProperties = defaultProperties }: HomeProps) => {
                 />
               </div>
 
-              <div className="text-center">
+              <div className="text-center bg-white p-6 rounded-lg shadow-md">
                 <motion.div
                   initial={{ opacity: 0, scale: 0.5 }}
                   whileInView={{ opacity: 1, scale: 1 }}
@@ -391,83 +468,11 @@ const Home = ({ initialProperties = defaultProperties }: HomeProps) => {
                 />
               </div>
             </div>
-
-            {/* Popular Cities */}
-            <h2 className="text-3xl font-bold text-center mb-12">
-              Popular Cities
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {[
-                {
-                  name: "Ahmedabad",
-                  image:
-                    "https://images.unsplash.com/photo-1599940824399-b87987ceb969?w=800&q=80",
-                },
-                {
-                  name: "Surat",
-                  image:
-                    "https://images.unsplash.com/photo-1572508588813-77abd219e994?w=800&q=80",
-                },
-                {
-                  name: "Vadodara",
-                  image:
-                    "https://images.unsplash.com/photo-1580558606307-50d51681045c?w=800&q=80",
-                },
-                {
-                  name: "Rajkot",
-                  image:
-                    "https://images.unsplash.com/photo-1582376432754-b63cc6a9b8c3?w=800&q=80",
-                },
-                {
-                  name: "Gandhinagar",
-                  image:
-                    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80",
-                },
-                {
-                  name: "Bhavnagar",
-                  image:
-                    "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80",
-                },
-                {
-                  name: "Jamnagar",
-                  image:
-                    "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80",
-                },
-                {
-                  name: "Junagadh",
-                  image:
-                    "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800&q=80",
-                },
-              ].map((city) => (
-                <motion.div
-                  key={city.name}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  className="relative group cursor-pointer"
-                  onClick={() =>
-                    (window.location.href = `/properties?city=${city.name.toLowerCase()}`)
-                  }
-                >
-                  <div className="aspect-[4/3] rounded-lg overflow-hidden">
-                    <img
-                      src={city.image}
-                      alt={city.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <h3 className="text-white text-xl font-semibold">
-                        {city.name}
-                      </h3>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
           </div>
         </section>
+
         {/* Services Section */}
-        <section className="py-20 bg-gray-50">
+        <section className="py-16 bg-white">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <motion.div
@@ -531,8 +536,69 @@ const Home = ({ initialProperties = defaultProperties }: HomeProps) => {
           </div>
         </section>
 
+        {/* Download App Section */}
+        <section className="py-16 bg-green-600 text-white">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+              >
+                <h2 className="text-3xl font-bold mb-4">
+                  Download Our Mobile App
+                </h2>
+                <p className="mb-6">
+                  Get the best property deals on the go with our mobile
+                  application
+                </p>
+                <div className="flex flex-wrap gap-4">
+                  <Button className="bg-black hover:bg-gray-800 text-white px-6">
+                    <svg
+                      className="w-5 h-5 mr-2"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path d="M17.5,2H8.5L3,7.5v9L8.5,22h9l5.5-5.5v-9L17.5,2z M12,17.5c-2.75,0-5-2.25-5-5s2.25-5,5-5s5,2.25,5,5S14.75,17.5,12,17.5z" />
+                    </svg>
+                    Google Play
+                  </Button>
+                  <Button className="bg-black hover:bg-gray-800 text-white px-6">
+                    <svg
+                      className="w-5 h-5 mr-2"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path d="M16.5,2h-9C5.06,2,3,4.06,3,6.5v11C3,19.94,5.06,22,7.5,22h9c2.44,0,4.5-2.06,4.5-4.5v-11C21,4.06,18.94,2,16.5,2z M12,17.5c-0.28,0-0.5-0.22-0.5-0.5s0.22-0.5,0.5-0.5s0.5,0.22,0.5,0.5S12.28,17.5,12,17.5z M14.5,14h-5c-0.28,0-0.5-0.22-0.5-0.5s0.22-0.5,0.5-0.5h5c0.28,0,0.5,0.22,0.5,0.5S14.78,14,14.5,14z" />
+                    </svg>
+                    App Store
+                  </Button>
+                </div>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="flex justify-center"
+              >
+                <img
+                  src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=500&q=80"
+                  alt="Mobile App"
+                  className="max-w-xs rounded-lg shadow-lg"
+                />
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* Blog Section */}
+        <BlogSection />
+
+        {/* Meme Section */}
+        <MemeSection />
+
         {/* Trusted References */}
-        <section className="py-16">
+        <section className="py-16 bg-gray-50">
           <div className="container mx-auto px-4">
             <div className="flex flex-col md:flex-row justify-between items-center">
               <div>
@@ -592,7 +658,7 @@ const Home = ({ initialProperties = defaultProperties }: HomeProps) => {
         </section>
       </motion.main>
       <Footer />
-    </AnimatedGradientBackground>
+    </div>
   );
 };
 

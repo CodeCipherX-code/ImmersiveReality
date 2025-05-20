@@ -24,10 +24,10 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate initial loading with a shorter time
+    // Ensure splash screen shows for at least 5 seconds
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 1000);
+    }, 5000);
     return () => clearTimeout(timer);
   }, []);
 

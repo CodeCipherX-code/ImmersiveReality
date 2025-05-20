@@ -33,6 +33,9 @@ const propertyTypes = [
   "Duplex",
 ];
 
+// Export property types for use in other components
+export { propertyTypes };
+
 // Property statuses
 const propertyStatuses = [
   "For Sale",
@@ -41,6 +44,9 @@ const propertyStatuses = [
   "New Launch",
   "Under Construction",
 ];
+
+// Export property statuses for use in other components
+export { propertyStatuses };
 
 // Property amenities
 const amenities = [
@@ -70,6 +76,9 @@ const amenities = [
   "Rainwater Harvesting",
   "Solar Panels",
 ];
+
+// Export amenities for use in other components
+export { amenities };
 
 // Agent names
 const agentNames = [
@@ -439,6 +448,15 @@ const generateProperty = (id: number) => {
     "1600607688066",
   ];
 
+  // 360 tour URLs for some properties
+  const tour360Urls = [
+    "https://momento360.com/e/u/9303b6c9ac284da5bde3e9183ec9efea",
+    "https://momento360.com/e/u/1f364de980484f5d8c6e7fa8bfd42dc7",
+    "https://momento360.com/e/u/a09a1ad7cafd47db9369a23d92d8aaae",
+    "https://momento360.com/e/u/7dd07e0c03794c2abe1a4b0a9bd5f712",
+    "https://momento360.com/e/u/1e6b5812dc694f9e9f8173d7b8ffe6cb",
+  ];
+
   const images = [];
   const mainImageId = imageIds[getRandomNumber(0, imageIds.length - 1)];
   images.push(`https://images.unsplash.com/photo-${mainImageId}?w=800&q=80`);
@@ -460,6 +478,9 @@ const generateProperty = (id: number) => {
     }
   }
 
+  // Add 360 tour URL to all properties
+  const tour360 = tour360Urls[Math.floor(Math.random() * tour360Urls.length)];
+
   return {
     id: `prop${id}`,
     title,
@@ -478,13 +499,27 @@ const generateProperty = (id: number) => {
     financingOptions,
     images,
     city,
+    tour360, // Add 360 tour URL if available
   };
 };
 
 // Generate 100 properties (increased from 50 to include more middle class and student options)
-export const properties = Array.from({ length: 100 }, (_, i) =>
-  generateProperty(i + 1),
-);
+let properties = Array.from({ length: 100 }, (_, i) => generateProperty(i + 1));
+
+// Add specific 360 tour URLs to the first 4 properties
+const tourUrls = [
+  "https://poly.cam/capture/D1321BAF-FAF6-435F-8784-87C6DA7BC1C9",
+  "https://poly.cam/capture/B21D5CAF-F355-4A06-B812-CA4C653D7A98",
+  "https://poly.cam/capture/8C5254C9-7DD4-4A53-BE4C-4A65D38042FC",
+  "https://poly.cam/capture/E4F55AD7-EF6B-439B-B620-90ED2F668EBE",
+];
+
+// Update the first 4 properties with specific tour URLs
+for (let i = 0; i < 4 && i < properties.length; i++) {
+  properties[i].tour360 = tourUrls[i];
+}
+
+export { properties };
 
 // Export properties by city
 export const getPropertiesByCity = (city: string) => {
