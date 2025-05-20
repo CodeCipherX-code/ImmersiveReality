@@ -36,7 +36,7 @@ const SavePropertyButton = ({
         const { data, error } = await supabase
           .from("saved_properties")
           .select("*")
-          .eq("user_id", user.id)
+          .eq("user_id", user.id) // This ensures we only check properties saved by the current user
           .eq("property_id", propertyId)
           .single();
 
@@ -69,7 +69,7 @@ const SavePropertyButton = ({
         const { error } = await supabase
           .from("saved_properties")
           .delete()
-          .eq("user_id", user!.id)
+          .eq("user_id", user!.id) // This ensures we only delete properties saved by the current user
           .eq("property_id", propertyId);
 
         if (error) throw error;

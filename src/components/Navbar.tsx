@@ -7,29 +7,40 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { User, Menu } from "lucide-react";
+import { User, Menu, Home, Building, MapPin, Users } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { AuthModal } from "./AuthModal";
+import PostPropertyModal from "./PostPropertyModal";
 
 const Navbar = () => {
   const { user, signOut, isAuthenticated } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showPostPropertyModal, setShowPostPropertyModal] = useState(false);
   const userAvatar = "https://api.dicebear.com/7.x/avataaars/svg?seed=default";
 
   const mainNavItems = [
-    { label: "Home", href: "/" },
+    { label: "Home", href: "/", icon: <Home className="h-4 w-4" /> },
     {
       label: "Properties",
       href: "/properties",
+      icon: <Building className="h-4 w-4" />,
       dropdown: [
         { label: "Buy", href: "/properties?type=buy" },
         { label: "Rent", href: "/properties?type=rent" },
         { label: "Commercial", href: "/properties?type=commercial" },
       ],
     },
-    { label: "Map Search", href: "/map-search" },
-    { label: "Find Agents", href: "/agents" },
+    {
+      label: "Map Search",
+      href: "/map-search",
+      icon: <MapPin className="h-4 w-4" />,
+    },
+    {
+      label: "Find Agents",
+      href: "/agents",
+      icon: <Users className="h-4 w-4" />,
+    },
   ];
 
   const secondaryNavItems = [
@@ -45,8 +56,24 @@ const Navbar = () => {
       <div className="container mx-auto h-full flex items-center justify-between px-4">
         {/* Logo */}
         <div className="flex items-center gap-2">
-          <a href="/" className="text-xl font-bold">
-            Estate<span className="text-green-600">Vista</span>
+          <a href="/" className="flex items-center">
+            <div className="w-8 h-8 mr-2">
+              <svg
+                viewBox="0 0 36 36"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M18 2L3 10L18 18L33 10L18 2Z" fill="#4CAF50" />
+                <path d="M3 10V26L18 34V18L3 10Z" fill="#2196F3" />
+                <path d="M18 18V34L33 26V10L18 18Z" fill="#FFC107" />
+                <path d="M18 2L13 4.5L28 12.5L33 10L18 2Z" fill="#8BC34A" />
+                <path d="M13 4.5V21.5L18 24V7L13 4.5Z" fill="#03A9F4" />
+                <path d="M18 7V24L28 17V12.5L18 7Z" fill="#FFD54F" />
+              </svg>
+            </div>
+            <span className="text-xl font-bold">
+              Estate<span className="text-green-600">Vista</span>
+            </span>
           </a>
         </div>
 
@@ -60,6 +87,7 @@ const Navbar = () => {
                     href={item.href}
                     className="text-sm font-medium text-gray-700 hover:text-green-600 transition-colors flex items-center gap-1 py-2"
                   >
+                    {item.icon && <span className="mr-1">{item.icon}</span>}
                     {item.label}
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -92,8 +120,9 @@ const Navbar = () => {
                 <a
                   key={item.label}
                   href={item.href}
-                  className="text-sm font-medium text-gray-700 hover:text-green-600 transition-colors px-3 py-2"
+                  className="text-sm font-medium text-gray-700 hover:text-green-600 transition-colors px-3 py-2 flex items-center"
                 >
+                  {item.icon && <span className="mr-1">{item.icon}</span>}
                   {item.label}
                 </a>
               ),
@@ -117,7 +146,12 @@ const Navbar = () => {
 
         {/* User Menu */}
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="hidden md:flex">
+          <Button
+            variant="outline"
+            size="sm"
+            className="hidden md:flex"
+            onClick={() => setShowPostPropertyModal(true)}
+          >
             <span className="mr-1">+</span> Post Property
           </Button>
 
@@ -176,13 +210,21 @@ const Navbar = () => {
               <a
                 key={item.label}
                 href={item.href}
-                className="block text-sm font-medium text-gray-700 hover:text-green-600 py-2"
+                className="block text-sm font-medium text-gray-700 hover:text-green-600 py-2 flex items-center"
                 onClick={() => setShowMobileMenu(false)}
               >
+                {item.icon && <span className="mr-2">{item.icon}</span>}
                 {item.label}
               </a>
             ))}
-            <Button className="w-full mt-2" size="sm">
+            <Button
+              className="w-full mt-2"
+              size="sm"
+              onClick={() => {
+                setShowMobileMenu(false);
+                setShowPostPropertyModal(true);
+              }}
+            >
               <span className="mr-2">+</span> Post Property
             </Button>
           </div>
@@ -192,6 +234,11 @@ const Navbar = () => {
       <AuthModal
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
+      />
+
+      <PostPropertyModal
+        isOpen={showPostPropertyModal}
+        onClose={() => setShowPostPropertyModal(false)}
       />
     </div>
   );

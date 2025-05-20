@@ -45,7 +45,7 @@ const SavedPropertiesList = () => {
             property:properties(id, title, price, location, bedrooms, bathrooms, sqft, imageUrl)
           `,
           )
-          .eq("user_id", user.id)
+          .eq("user_id", user.id) // This ensures we only get properties saved by the current user
           .order("saved_at", { ascending: false });
 
         if (error) {
